@@ -1,3 +1,4 @@
+const {ipcMain} = require('electron')
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
@@ -59,3 +60,36 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+const config = {
+  clientId: '22684',
+  clientSecret: '.OOJcUV-7YSlqqnOotf.R7ulE9d7AiG8.YSoeHa4AJ8',
+  authorizationUrl: 'https://www.bungie.net/en/OAuth/Authorize',
+  tokenUrl: 'https://www.bungie.net/Platform/App/OAuth/token/',
+  useBasicAuthorizationHeader: false,
+  redirectUri: 'https://www.getpostman.com/oauth2/callback'
+};
+
+const windowParams = {
+    alwaysOnTop: true,
+    autoHideMenuBar: true,
+    webPreferences: {
+        nodeIntegration: false
+    }
+};
+const options = {
+    accessType: 'code'
+};
+const electronOauth2 = require('electron-oauth2');
+const bungieOAuth = electronOauth2(config, windowParams);
+ipcMain.on('destiny2-oauth', (event, arg) => {
+  console.log('clicked');
+  bungieOAuth.getAccessToken(options)
+    .then(token => {
+      // use your token.access_token
+      console.log(token);
+      bungieOAuth.refreshToken(token.refresh_token)
+        .then(newToken => {
+          //use your new token
+        });
+    });
+})

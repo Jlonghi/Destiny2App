@@ -1,5 +1,7 @@
 const {ipcMain} = require('electron')
 const electron = require('electron')
+const electronOauth2 = require('electron-oauth2');
+
 // Module to control application life.
 const app = electron.app
 // Module to create native browser window.
@@ -24,7 +26,7 @@ function createWindow () {
   }))
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -69,6 +71,7 @@ const config = {
   redirectUri: 'https://www.getpostman.com/oauth2/callback'
 };
 
+// Run window params for Electron oauth2
 const windowParams = {
     alwaysOnTop: true,
     autoHideMenuBar: true,
@@ -79,18 +82,19 @@ const windowParams = {
 const options = {
     accessType: 'code'
 };
-const electronOauth2 = require('electron-oauth2');
+
+//Call library function to begin authorization
 const bungieOAuth = electronOauth2(config, windowParams);
+
+//Receive message from Renderer
 ipcMain.on('destiny2-oauth', (event, arg) => {
-  console.log('clicked');
   bungieOAuth.getAccessToken(options)
     .then(token => {
       // use your token.access_token
-      console.log(token.membership_id);
-      bungieOAuth.refreshToken(token.refresh_token)
-        .then(newToken => {
-          //use your new token
-        });
+      //bungieOAuth.refreshToken(token.refresh_token)
+      //  .then(newToken => {
+      //    //use your new token
+      //  });
 		event.sender.send('destiny2-getCurrentUser', token);
     });
 })

@@ -20,7 +20,7 @@
     "electron": "~1.7.8"
   },
   "dependencies": {
-    "electron-oauth2": "^3.0.0",
-    "superagent": "^3.8.1"
+    "electron-json-storage": "^4.0.2",
+    "electron-oauth2": "^3.0.0"
   }
 }

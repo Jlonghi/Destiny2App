@@ -86,10 +86,11 @@ ipcMain.on('destiny2-oauth', (event, arg) => {
   bungieOAuth.getAccessToken(options)
     .then(token => {
       // use your token.access_token
-      console.log(token);
+      console.log(token.membership_id);
       bungieOAuth.refreshToken(token.refresh_token)
         .then(newToken => {
           //use your new token
         });
+		event.sender.send('destiny2-getCurrentUser', token);
     });
 })

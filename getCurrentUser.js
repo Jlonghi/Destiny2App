@@ -2,19 +2,26 @@ const {ipcRenderer} = require('electron')
 const getCurr = document.getElementById('getCurr')
 const os = require('os');
 const storage = require('electron-json-storage');
-var token;
+var charData;
+// jQuery
 
-//getCurr.addEventListener('click', function (event) {
-//    storage.get('UserData', function(error, data) {
-//        if (error) throw error;
- 
-//        console.log(JSON.stringify(data.Response));
-//    });
-//})
+
+function renderCharacterEmblems(data){
+    $.getScript('./Ajax_Requests.js', function()
+    {
+        getProfileInfo(JSON.stringify(data.Response.destinyMemberships[0].membershipId).replace(/['"]+/g, ''),
+                                        JSON.stringify(data.Response.destinyMemberships[0].membershipType),
+                                        200);
+    });
+    storage.get('CharacterData', function(error, data) {
+        if (error) throw error;
+        console.log(JSON.stringify(data));
+    });
+}
+
 ipcRenderer.on('destiny2-getCurrentUser',(event, token) => {
     //Set the data path for use with Storage Library
     storage.setDataPath(os.tmpdir());
-    console.log(JSON.stringify(token));
 
     //Setting token data
     storage.set('TokenData',token, function(error) {
@@ -33,8 +40,17 @@ ipcRenderer.on('destiny2-getCurrentUser',(event, token) => {
 	success: function (data) {
         //Save the User Data from API
 	    storage.set('UserData',data, function(error) {
-	        if (error) throw error;
+	        if (error)
+	            throw error;
+	        else{
+	            //window.location.href = "./index2.html";
+	            $("#login").hide();
+	            renderCharacterEmblems(data);
+	        }
 	    });
 	}
+    })
 })
-})
+
+
+

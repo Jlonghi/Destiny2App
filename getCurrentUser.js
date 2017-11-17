@@ -15,7 +15,16 @@ function renderCharacterEmblems(data){
     });
     storage.get('CharacterData', function(error, data) {
         if (error) throw error;
-        console.log(JSON.stringify(data));
+		var charData = data.Response.characters.data;
+		for (j in charData){
+			console.log(JSON.stringify(charData[j].emblemBackgroundPath));
+			var url = "\"https://www.bungie.net"+JSON.stringify(charData[j].emblemBackgroundPath).replace(/['"]+/g, '')
+			$("#characterEmbelems").append("<div style='background-image:url("+url+"\"); height:64px; width:328px'>"
+			+"<div aligned='left' style='padding:10px 0px 0px 80px'>class name </br> Exo Female</div>"
+			+"<div aligned='right'></div>"
+			+"</div></br>");
+		}
+		
     });
 }
 

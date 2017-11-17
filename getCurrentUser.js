@@ -19,9 +19,17 @@ function renderCharacterEmblems(data){
 		for (j in charData){
 			console.log(JSON.stringify(charData[j].emblemBackgroundPath));
 			var url = "\"https://www.bungie.net"+JSON.stringify(charData[j].emblemBackgroundPath).replace(/['"]+/g, '')
-			$("#characterEmbelems").append("<div style='background-image:url("+url+"\"); height:64px; width:328px'>"
-			+"<div aligned='left' style='padding:10px 0px 0px 80px'>class name </br> Exo Female</div>"
-			+"<div aligned='right'></div>"
+			$("#characterEmbelems").append("<div style='background-image:url("+url+"\"); height:85px; width:428px'>"
+			+"<div align='left' style='padding:10px 0px 0px 80px'>"
+                +"<font size='5' style='padding-top: 10px'>"
+                    + JSON.stringify(charData[j].classHash)
+                +"</font>" 
+                +"</br>"
+                +"<font size='3' style='padding-top: 10px'>"
+                    + JSON.stringify(charData[j].raceHash) + " " + JSON.stringify(charData[j].genderHash) 
+                +"</font>"
+            +"</div>"
+			+"<div align='right'></div>"
 			+"</div></br>");
 		}
 		

@@ -2,6 +2,7 @@ const {ipcRenderer} = require('electron')
 const getCurr = document.getElementById('getCurr')
 const os = require('os');
 const storage = require('electron-json-storage');
+var axios = require('axios');
 var charData;
 // jQuery
 var ClassRaceGender ={ 
@@ -10,17 +11,16 @@ var ClassRaceGender ={
 	"Gender" : ["Male", "Female", "Unknown"]
 }
 
-
-function renderCharacterEmblems(data){
+function sendProfile(data){
     $.getScript('./Ajax_Requests.js', function()
     {
-        getProfileInfo(JSON.stringify(data.Response.destinyMemberships[0].membershipId).replace(/['"]+/g, ''),
-                                        JSON.stringify(data.Response.destinyMemberships[0].membershipType),
+        getProfileInfo(JSON.stringify(data.data.Response.destinyMemberships[0].membershipId).replace(/['"]+/g, ''),
+                                        JSON.stringify(data.data.Response.destinyMemberships[0].membershipType),
                                         200);
     });
-    storage.get('CharacterData', function(error, data) {
-        if (error) throw error;
-		var charData = data.Response.characters.data;
+}
+ipcRenderer.on('send-profile', function(event, data) {
+		var charData = data.data.Response.characters.data;
 		for (j in charData){
 			console.log(JSON.stringify(charData[j].emblemBackgroundPath));
 			var url = "\"https://www.bungie.net"+JSON.stringify(charData[j].emblemBackgroundPath).replace(/['"]+/g, '')
@@ -47,44 +47,74 @@ function renderCharacterEmblems(data){
 			+"</div> </br>");
 			document.getElementById(j)
                 .addEventListener('click', function (event) {
-                    ipcRenderer.send('character-details-main', this.id);
+                    ipcRenderer.send('character-details-main', charData[this.id]);
                 });
 		}
 		
     });
-}
 
 ipcRenderer.on('destiny2-getCurrentUser',(event, token) => {
     //Set the data path for use with Storage Library
     storage.setDataPath(os.tmpdir());
-
+    //DELETE THIS LATER
+    //WE WANT TO START FRESH WHILE TESTING
+    storage.remove('CharacterData', function(error) {
+        if (error) throw error;
+    });
+    storage.remove('TokenData', function(error) {
+        if (error) throw error;
+    });
+    storage.remove('UserData', function(error){
+        if (error) throw error;
+    })
     //Setting token data
     storage.set('TokenData',token, function(error) {
         if (error) throw error;
     });
-
-    //Bungie API Request to find current user information
-	$.ajax({
-	url : 'https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/',
-	type: 'GET',
-	headers:{
-		Authorization: token.token_type + ' ' + token.access_token,
-		'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
-		'Content-Type': 'application/json'
-	},
-	success: function (data) {
-        //Save the User Data from API
-	    storage.set('UserData',data, function(error) {
-	        if (error)
-	            throw error;
-	        else{
-	            //window.location.href = "./index2.html";
-	            $("#login").hide();
-	            renderCharacterEmblems(data);
-	        }
-	    });
-	}
+    ////Bungie API Request to find current user information(replacing old function)
+    axios({
+        method: 'GET',
+        url: 'https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/',
+        headers: { 
+            Authorization: token.token_type + ' ' + token.access_token,
+            'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
+            'Content-Type': 'application/json'}
     })
+    .then(function(response){
+        storage.set('UserData',response, function(error) {
+            if (error)
+                throw error;
+            else{
+                //window.location.href = "./index2.html";
+                $("#login").hide();
+                sendProfile(response);
+            }
+        });
+    })
+    .catch(function (error){
+    })
+    ////Bungie API Request to find current user information
+	//$.ajax({
+	//url : 'https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/',
+	//type: 'GET',
+	//headers:{
+	//	Authorization: token.token_type + ' ' + token.access_token,
+	//	'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
+	//	'Content-Type': 'application/json'
+	//},
+	//success: function (data) {
+    //    //Save the User Data from API
+	//    storage.set('UserData',data, function(error) {
+	//        if (error)
+	//            throw error;
+	//        else{
+	//            //window.location.href = "./index2.html";
+	//            $("#login").hide();
+	//            renderCharacterEmblems(data);
+	//        }
+	//    });
+	//}
+    //})
 })
 
 

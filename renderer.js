@@ -59,19 +59,41 @@ function getIcon(itemHash, type){
         ipcRenderer.send('send-icon-image-main',item);
     })
 }
+function getStatDetails(statHash, statValues){
+    axios({
+        method: 'GET',
+        url:"https://www.bungie.net/Platform/Destiny2/Manifest/DestinyStatDefinition/" + statHash,
+        headers:{
+            'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
+            'Content-Type': 'application/json'
+        }
+    }).then(function(response){
+        $('div#pop-up').append(JSON.stringify("<p>"+response.data.Response.displayProperties.name).replace(/['"]+/g, '')+ " " +statValues.value + "</p>")
+//        console.log(JSON.stringify(response))
+    })
+}
 ipcRenderer.on('send-icon-image', function(event, item){
     $("#"+item.type).attr("src", "https://www.bungie.net" + item.icon.replace(/['"]+/g, ''))
+    
+    //pop up logic
     $(function() {
         var moveLeft = 20;
         var moveDown = 10;
-    //pop up logic
         $("#"+item.type).hover(function(e) {
             $('div#pop-up').show()
             .css('top', e.pageY + moveDown)
             .css('left', e.pageX + moveLeft)
             .appendTo('body');
-            //needs parsing and stat definition look up
-            $('div#pop-up').text(JSON.stringify(item.stats))
+            //clears old pop up stats
+            $('div#pop-up').text("")
+            for(var statHash in item.stats){
+                var statValues = {
+                    value: JSON.stringify(item.stats[statHash].value),
+                    max: JSON.stringify(item.stats[statHash].max),
+                    min: JSON.stringify(item.stats[statHash].min),
+                }
+                getStatDetails(statHash, statValues)
+            }
         }, function() {
             $('div#pop-up').hide();
         });

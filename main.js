@@ -98,3 +98,6 @@ ipcMain.on('destiny2-oauth', (event, arg) => {
 		event.sender.send('destiny2-getCurrentUser', token);
     });
 })
+ipcMain.on('character-details-main', function (event, characterId){
+    event.sender.send('character-details', characterId);
+});

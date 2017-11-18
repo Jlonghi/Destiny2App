@@ -47,7 +47,7 @@ function renderCharacterEmblems(data){
 			+"</div> </br>");
 			document.getElementById(j)
                 .addEventListener('click', function (event) {
-                    alert("You've clicked something ")
+                    ipcRenderer.send('character-details-main', this.id);
                 });
 		}
 		

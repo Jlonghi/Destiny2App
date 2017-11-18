@@ -26,21 +26,22 @@ function renderCharacterEmblems(data){
 			var url = "\"https://www.bungie.net"+JSON.stringify(charData[j].emblemBackgroundPath).replace(/['"]+/g, '')
 			$("#characterEmbelems").append("<div style='background-image:url("+url+"\"); height:85px; width:428px'>"
 			+"<div style='padding:10px 0px 0px 80px'>"
-                +"<font size='5' style='padding-top: 10px'>"
+                +"<div style='font-size:150%; padding-bottom:5px'>"
                     + ClassRaceGender.Class[JSON.stringify(charData[j].classType)]
-                +"</font>" 
-                +"<font size='4'style='padding-left: 190px'>"
-                    +JSON.stringify(charData[j].levelProgression.level)
-                +"</font>"
-                +"</br>"
-                +"<font size='3' style='padding-top: 10px'>"
+                    +"<object align='right' style='padding-right: 10px'>"
+                        + JSON.stringify(charData[j].levelProgression.level)
+                    +"</object>"
+                +"</div>"
+
+                +"<div style='font-size:120%'>"
                     + ClassRaceGender.Race[JSON.stringify(charData[j].raceType)] + " " + ClassRaceGender.Gender[JSON.stringify(charData[j].genderType)] 
-                +"</font>"
-                +"<i class='glyphicon glyphicon-flash' style='color:yellow; padding-left: 120px' >"
-                    +"<font size='4'>"
-                        + JSON.stringify(charData[j].light)
-                    +"</font>"
-                +"</i>"
+                    +"<object align='right' style='padding-right: 10px'>"
+                        +"<i class='glyphicon glyphicon-flash' style='color:yellow; padding-left: 1px' >"
+                            + JSON.stringify(charData[j].light)
+                        +"</i>"
+                    +"</object>"
+                +"</div>"
+
             +"</div>"
 			+"</div></br>");
 		}

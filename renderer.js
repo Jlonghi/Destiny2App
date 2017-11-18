@@ -53,14 +53,29 @@ function getIcon(itemHash, type){
     }).then(function(response){
         var item = {
             icon : JSON.stringify(response.data.Response.displayProperties.icon),
-            type : type
+            type : type,
+            stats: response.data.Response.stats.stats
         }
         ipcRenderer.send('send-icon-image-main',item);
     })
 }
 ipcRenderer.on('send-icon-image', function(event, item){
-    console.log("test" + JSON.stringify(item));
     $("#"+item.type).attr("src", "https://www.bungie.net" + item.icon.replace(/['"]+/g, ''))
+    $(function() {
+        var moveLeft = 20;
+        var moveDown = 10;
+    //pop up logic
+        $("#"+item.type).hover(function(e) {
+            $('div#pop-up').show()
+            .css('top', e.pageY + moveDown)
+            .css('left', e.pageX + moveLeft)
+            .appendTo('body');
+            //needs parsing and stat definition look up
+            $('div#pop-up').text(JSON.stringify(item.stats))
+        }, function() {
+            $('div#pop-up').hide();
+        });
+    });
 })
 ipcRenderer.on('character-details', function (event, characterInfo){
     axios({

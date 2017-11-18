@@ -10,3 +10,13 @@ html, body {
     padding-bottom: 3px;
     padding-top: 3px;
 }
+div#pop-up {
+  display: none;
+  position: absolute;
+  width: 500px;
+  padding: 10px;
+  background: #eeeeee;
+  color: #000000;
+  border: 1px solid #1a1a1a;
+  font-size: 90%;
+}

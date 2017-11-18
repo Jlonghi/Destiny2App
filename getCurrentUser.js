@@ -20,16 +20,23 @@ function renderCharacterEmblems(data){
 			console.log(JSON.stringify(charData[j].emblemBackgroundPath));
 			var url = "\"https://www.bungie.net"+JSON.stringify(charData[j].emblemBackgroundPath).replace(/['"]+/g, '')
 			$("#characterEmbelems").append("<div style='background-image:url("+url+"\"); height:85px; width:428px'>"
-			+"<div align='left' style='padding:10px 0px 0px 80px'>"
+			+"<div style='padding:10px 0px 0px 80px'>"
                 +"<font size='5' style='padding-top: 10px'>"
                     + JSON.stringify(charData[j].classHash)
                 +"</font>" 
+                +"<font size='4'style='padding-left: 190px'>"
+                    +JSON.stringify(charData[j].levelProgression.level)
+                +"</font>"
                 +"</br>"
                 +"<font size='3' style='padding-top: 10px'>"
                     + JSON.stringify(charData[j].raceHash) + " " + JSON.stringify(charData[j].genderHash) 
                 +"</font>"
+                +"<i class='glyphicon glyphicon-flash' style='color:yellow; padding-left: 120px' >"
+                    +"<font size='4'>"
+                        + JSON.stringify(charData[j].light)
+                    +"</font>"
+                +"</i>"
             +"</div>"
-			+"<div align='right'></div>"
 			+"</div></br>");
 		}
 		

@@ -4,6 +4,11 @@ const os = require('os');
 const storage = require('electron-json-storage');
 var charData;
 // jQuery
+var ClassRaceGender ={ 
+	"Race" : ["Human", "Awoken", "Exo", "Unknown"],
+	"Class" : ["Titan", "Hunter", "Warlock", "Unknown"],
+	"Gender" : ["Male", "Female", "Unknown"]
+}
 
 
 function renderCharacterEmblems(data){
@@ -22,11 +27,11 @@ function renderCharacterEmblems(data){
 			$("#characterEmbelems").append("<div style='background-image:url("+url+"\"); height:85px; width:428px'>"
 			+"<div align='left' style='padding:10px 0px 0px 80px'>"
                 +"<font size='5' style='padding-top: 10px'>"
-                    + JSON.stringify(charData[j].classHash)
+                    + ClassRaceGender.Class[JSON.stringify(charData[j].classType)]
                 +"</font>" 
                 +"</br>"
                 +"<font size='3' style='padding-top: 10px'>"
-                    + JSON.stringify(charData[j].raceHash) + " " + JSON.stringify(charData[j].genderHash) 
+                    + ClassRaceGender.Race[JSON.stringify(charData[j].raceType)] + " " + ClassRaceGender.Gender[JSON.stringify(charData[j].genderType)] 
                 +"</font>"
             +"</div>"
 			+"<div align='right'></div>"

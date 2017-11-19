@@ -3,6 +3,11 @@ const os = require('os');
 const storage = require('electron-json-storage');
 const axios = require('axios')
 
+var globalChar;
+var itemLevels = {
+    powerLevel: "",
+    requiredLevel: ""
+}
 itemType = {
     kinetic: 0,
     energy: 1,
@@ -68,13 +73,28 @@ function getStatDetails(statHash, statValues){
             'Content-Type': 'application/json'
         }
     }).then(function(response){
-        $('div#pop-up').append(JSON.stringify("<p>"+response.data.Response.displayProperties.name).replace(/['"]+/g, '')+ " " +statValues.value + "</p>")
-//        console.log(JSON.stringify(response))
+        getItemPower(globalChar.membershipType, globalChar.membershipId, globalChar.itemInstanceId)
+        console.log("power level " + itemLevels.powerLevel)
+        $("#"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')).append("<p>"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')+ " " +statValues.value + "</p>")
+    })
+}
+function getItemPower(membershipType, membershipId, itemInstanceId){
+    axios({
+        method: 'GET',
+        url:"https://www.bungie.net/Platform/Destiny2/"+membershipType+"/Profile/"+membershipId+"/item/"+itemInstanceId+"/?components=300",
+        headers:{
+            'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
+            'Content-Type': 'application/json'
+        }
+    }).then(function(response){
+        itemLevels.powerLevel = JSON.stringify(response.Response.instance.data.primaryStat.value)
+        itemLevels.requiredLevel = JSON.stringify(response.Response.instance.data.equipRequiredLevel)
+        
     })
 }
 ipcRenderer.on('send-icon-image', function(event, item){
     $("#"+item.type).attr("src", "https://www.bungie.net" + item.icon.replace(/['"]+/g, ''))
-    
+    console.log('global test '+ JSON.stringify(globalChar));
     //pop up logic
     $(function() {
         var moveLeft = 20;
@@ -85,7 +105,7 @@ ipcRenderer.on('send-icon-image', function(event, item){
             .css('left', e.pageX + moveLeft)
             .appendTo('body');
             //clears old pop up stats
-            $('div#pop-up').text("")
+            $('.stat').text("")
             for(var statHash in item.stats){
                 var statValues = {
                     value: JSON.stringify(item.stats[statHash].value),
@@ -100,6 +120,7 @@ ipcRenderer.on('send-icon-image', function(event, item){
     });
 })
 ipcRenderer.on('character-details', function (event, characterInfo){
+    globalChar = characterInfo;
     axios({
         method: 'GET',
         url: 'https://www.bungie.net/Platform/Destiny2/' 

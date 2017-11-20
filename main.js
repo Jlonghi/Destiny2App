@@ -107,3 +107,6 @@ ipcMain.on('send-profile-main', function(event, response){
 ipcMain.on('send-icon-image-main', function(event, response){
     event.sender.send('send-icon-image', response);
 })
+ipcMain.on('load-emblem-main', function(event, response){
+    event.sender.send('load-emblem', response)
+})

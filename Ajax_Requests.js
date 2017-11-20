@@ -33,6 +33,7 @@ var axios = require('axios');
 
 //This call is a get request for Destiny2 profile information 
 //component_type variable must be given to specify what information
+var globalAccountCharacters;
 function getProfileInfo(membership_id, account_type, component_type) {
 
     axios({
@@ -44,6 +45,7 @@ function getProfileInfo(membership_id, account_type, component_type) {
         }
     })
     .then(function (response) {
+        globalAccountCharacters = response;
         ipcRenderer.send('send-profile-main', response);
 
         //Saving character data

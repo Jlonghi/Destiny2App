@@ -19,22 +19,23 @@ function sendProfile(data){
                                         200);
     });
 }
+
 ipcRenderer.on('send-profile', function(event, data) {
 		var charData = data.data.Response.characters.data;
 		for (j in charData){
 			console.log(JSON.stringify(charData[j].emblemBackgroundPath));
 			var url = "\"https://www.bungie.net"+JSON.stringify(charData[j].emblemBackgroundPath).replace(/['"]+/g, '')
 			$("#characterEmbelems").append(
-                "<div id='"+ j +"' style='background-image:url("+url+"\"); height:85px; width:428px'>"
+                "<div class='element' id='"+ j +"' style='background-image:url("+url+"\"); height:85px; width:428px'>"
 			        +"<div style='padding:10px 0px 0px 80px'>"
-                        +"<div style='font-size:150%; padding-bottom:5px'>"
+                        +"<div align='left' style='font-size:150%; padding-bottom:5px'>"
                             + ClassRaceGender.Class[JSON.stringify(charData[j].classType)]
                             +"<object align='right' style='padding-right: 10px'>"
                                 + JSON.stringify(charData[j].levelProgression.level)
                             +"</object>"
                         +"</div>"
 
-                        +"<div style='font-size:120%'>"
+                        +"<div align='left' style='font-size:120%'>"
                             + ClassRaceGender.Race[JSON.stringify(charData[j].raceType)] + " " + ClassRaceGender.Gender[JSON.stringify(charData[j].genderType)] 
                             +"<object align='right' style='padding-right: 10px'>"
                                 +"<i class='glyphicon glyphicon-flash' style='color:yellow; padding-left: 1px' >"

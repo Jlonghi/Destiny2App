@@ -20,3 +20,11 @@ div#pop-up {
   border: 1px solid #1a1a1a;
   font-size: 90%;
 }
+.wrapper{
+    display:table;
+    width: auto;
+}
+.element{
+    display:table-cell;
+    width:auto;
+}

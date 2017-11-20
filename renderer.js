@@ -99,7 +99,6 @@ function getItemPower(membershipType, membershipId, itemInstanceId){
     })
 }
 ipcRenderer.on('send-icon-image', function(event, item){
-    
     $("#"+item.type).attr("src", "https://www.bungie.net" + item.icon.replace(/['"]+/g, ''))
     //pop up logic
     $(function() {
@@ -113,7 +112,6 @@ ipcRenderer.on('send-icon-image', function(event, item){
             //clears old pop up stats
             $('.stat').text("")
             getItemPower(globalChar.membershipType, globalChar.membershipId, item.instanceId)
-
             for(var statHash in item.stats){
                 var statValues = {
                     value: JSON.stringify(item.stats[statHash].value),
@@ -129,6 +127,7 @@ ipcRenderer.on('send-icon-image', function(event, item){
 })
 ipcRenderer.on('character-details', function (event, characterInfo){
     globalChar = characterInfo;
+
     axios({
         method: 'GET',
         url: 'https://www.bungie.net/Platform/Destiny2/' 
@@ -145,6 +144,8 @@ ipcRenderer.on('character-details', function (event, characterInfo){
             getIcon(response.data.Response.characterEquipment.data[characterInfo.characterId].items[itemType[type]].itemHash, type,
                     response.data.Response.characterEquipment.data[characterInfo.characterId].items[itemType[type]].itemInstanceId);
         }
+        ipcRenderer.send('send-profile-main', globalAccountCharacters)
+        
     })
     .catch(function (error){
         console.log(error)
@@ -153,5 +154,6 @@ ipcRenderer.on('character-details', function (event, characterInfo){
     $(document).ready(function(){
         $("#body").load("./characterInventory.html")
     })
-
+   
+    
 });

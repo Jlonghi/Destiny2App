@@ -4,6 +4,12 @@ const os = require('os');
 const storage = require('electron-json-storage');
 var axios = require('axios');
 var charData;
+
+var character = {
+    characterId: "",
+    characterInstanceId: ""
+}
+var characters = []
 // jQuery
 var ClassRaceGender ={ 
 	"Race" : ["Human", "Awoken", "Exo", "Unknown"],
@@ -23,7 +29,6 @@ function sendProfile(data){
 ipcRenderer.on('send-profile', function(event, data) {
 		var charData = data.data.Response.characters.data;
 		for (j in charData){
-			console.log(JSON.stringify(charData[j].emblemBackgroundPath));
 			var url = "\"https://www.bungie.net"+JSON.stringify(charData[j].emblemBackgroundPath).replace(/['"]+/g, '')
 			$("#characterEmbelems").append(
                 "<div class='element' id='"+ j +"' style='background-image:url("+url+"\"); height:85px; width:428px'>"

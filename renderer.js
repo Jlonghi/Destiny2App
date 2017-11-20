@@ -21,6 +21,32 @@ itemType = {
     ghost: 8,
     banner:12
 }
+
+var testItem = {
+    instanceId: "",
+    itemHash: "",
+    stats: {},
+    type:"",
+    powerLevel:"",
+    requiredLevel:"",
+    iconUrl: "",
+    itemLocation: "",
+    
+}
+function getItemType(itemBucketHash){
+    axios({
+        method: 'GET',
+        url:"https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryBucketDefinition/" + itemBucketHash,
+        headers:{
+            'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
+            'Content-Type': 'application/json'
+        }
+    }).then(function(response){
+
+    })
+}   
+
+//gets stat hash's, item name and icon
 function getIcon(itemHash, type, itemInstanceId){
     axios({
         method: 'GET',
@@ -50,6 +76,9 @@ function getStatDetails(statHash, statValues){
     }).then(function(response){
         if(JSON.stringify(response.data.Response.displayProperties.name) != undefined){
             var property = JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')
+
+            testItem.stats[property.replace(/ /g,'')] = statValues.value
+
             $("#"+property.replace(/ /g,'')).append("<p>"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')+ " " +statValues.value + "</p>")
         }
     })
@@ -78,18 +107,18 @@ ipcRenderer.on('send-icon-image', function(event, item){
         var moveLeft = 20;
         var moveDown = 10;
         $("#"+item.type).click(function(e) {
+
             if($("#"+item.type).data('clicked')){
                 if(item.type == globalPreviousElement){
                     $('div#pop-up').hide();
                     $("#"+item.type).data('clicked', false)
                     globalPreviousElement = item.type;
                 }
-                else if (globalPreviousElement && $("#"+globalPreviousElement).data('clicked'))
-                    $("#"+globalPreviousElement).data('clicked', false);
+
             }
             else{
                 $("#"+item.type).data('clicked', true);
-                if(globalPreviousElement)
+                if(globalPreviousElement != item.type)
                     $("#"+globalPreviousElement).data('clicked', false);
                 globalPreviousElement = item.type;
                 $('div#pop-up').show()
@@ -107,9 +136,11 @@ ipcRenderer.on('send-icon-image', function(event, item){
                     }
                     getStatDetails(statHash, statValues)
                 }
+                console.log("our item! " + JSON.stringify(testItem))
             }
         });
 })
+//gets the item hash for a characters inventory
 ipcRenderer.on('character-details', function (event, characterInfo){
     globalChar = characterInfo;
 
@@ -124,7 +155,7 @@ ipcRenderer.on('character-details', function (event, characterInfo){
         headers:{ 'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
             'Content-Type': 'application/json'}
     })
-    .then(function(response){
+    .then(function(response){        
         for(var type in itemType){
             getIcon(response.data.Response.characterEquipment.data[characterInfo.characterId].items[itemType[type]].itemHash, type,
                     response.data.Response.characterEquipment.data[characterInfo.characterId].items[itemType[type]].itemInstanceId);

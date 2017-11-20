@@ -78,18 +78,18 @@ function getProfileInfo(membership_id, account_type, component_type) {
 
 //This call is a get request for item information (Pic/details)
 // use itemId with the item's hash id
-function getInfo(definition, itemId) {
-    $.ajax({
-        //DestinyInventoryItemDefinition
-        url: 'https://www.bungie.net/Platform/Destiny2/Manifest/' + definition + '/' + itemId,
-        type: 'GET',
-        headers: {
-            'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
-            'Content-Type': 'application/json'
-        },
-        success: function (data) {
-            console.log(JSON.stringify(data));
+// function getInfo(definition, itemId) {
+//     $.ajax({
+//         //DestinyInventoryItemDefinition
+//         url: 'https://www.bungie.net/Platform/Destiny2/Manifest/' + definition + '/' + itemId,
+//         type: 'GET',
+//         headers: {
+//             'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
+//             'Content-Type': 'application/json'
+//         },
+//         success: function (data) {
+//             console.log(JSON.stringify(data));
 
-        }
-    })
-}
+//         }
+//     })
+// }

@@ -4,6 +4,7 @@ const storage = require('electron-json-storage');
 const axios = require('axios')
 
 var globalChar;
+var globalPreviousElement;
 var itemLevels = {
     powerLevel: "",
     requiredLevel: ""
@@ -20,33 +21,6 @@ itemType = {
     ghost: 8,
     banner:12
 }
-//$("#power").hover(function(){
-//    $(document).mousemove(function(event){
-//        $(".image").css({"position":"absolute","left":event.clientX, "top":event.clientY}). show();
-//    })
-//})
-
-//$(document).bind("click",function(){
-//    $(document).unbind("mousemove");
-//    $("img").hide();
-//})
-//function testGet(membershipId, membershipType, contentType){
-//    alert("AXIOS CALL")
-//    axios({
-//        method: 'GET',
-//        url: 'https://www.bungie.net/Platform/Destiny2/' + membershipType + '/Profile/' + membershipId + '/?components=' + componentType,
-//        headers:{ 'X-API-Key': 'd3c3718995fb464ca66ddba314dc183a',
-//                  'Content-Type': 'application/json'}
-//    })
-//    .then(function(response){
-//        alert(response);
-//        console.log(response)
-//    })
-//    .catch(function (error){
-//        alert(error)
-//        console.log(error)
-//    })
-//}
 function getIcon(itemHash, type, itemInstanceId){
     axios({
         method: 'GET',
@@ -101,29 +75,40 @@ function getItemPower(membershipType, membershipId, itemInstanceId){
 ipcRenderer.on('send-icon-image', function(event, item){
     $("#"+item.type).attr("src", "https://www.bungie.net" + item.icon.replace(/['"]+/g, ''))
     //pop up logic
-    $(function() {
         var moveLeft = 20;
         var moveDown = 10;
-        $("#"+item.type).hover(function(e) {
-            $('div#pop-up').show()
-            .css('top', e.pageY + moveDown)
-            .css('left', e.pageX + moveLeft)
-            .appendTo('body');
-            //clears old pop up stats
-            $('.stat').text("")
-            getItemPower(globalChar.membershipType, globalChar.membershipId, item.instanceId)
-            for(var statHash in item.stats){
-                var statValues = {
-                    value: JSON.stringify(item.stats[statHash].value),
-                    max: JSON.stringify(item.stats[statHash].max),
-                    min: JSON.stringify(item.stats[statHash].min),
+        $("#"+item.type).click(function(e) {
+            if($("#"+item.type).data('clicked')){
+                if(item.type == globalPreviousElement){
+                    $('div#pop-up').hide();
+                    $("#"+item.type).data('clicked', false)
+                    globalPreviousElement = item.type;
                 }
-                getStatDetails(statHash, statValues)
+                else if (globalPreviousElement && $("#"+globalPreviousElement).data('clicked'))
+                    $("#"+globalPreviousElement).data('clicked', false);
             }
-        }, function() {
-            $('div#pop-up').hide();
+            else{
+                $("#"+item.type).data('clicked', true);
+                if(globalPreviousElement)
+                    $("#"+globalPreviousElement).data('clicked', false);
+                globalPreviousElement = item.type;
+                $('div#pop-up').show()
+                .css('top', e.pageY + moveDown)
+                .css('left', e.pageX + moveLeft)
+                .appendTo('body');
+                //clears old pop up stats
+                $('.stat').text("")
+                getItemPower(globalChar.membershipType, globalChar.membershipId, item.instanceId)
+                for(var statHash in item.stats){
+                    var statValues = {
+                        value: JSON.stringify(item.stats[statHash].value),
+                        max: JSON.stringify(item.stats[statHash].max),
+                        min: JSON.stringify(item.stats[statHash].min),
+                    }
+                    getStatDetails(statHash, statValues)
+                }
+            }
         });
-    });
 })
 ipcRenderer.on('character-details', function (event, characterInfo){
     globalChar = characterInfo;

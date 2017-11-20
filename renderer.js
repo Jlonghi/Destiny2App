@@ -47,7 +47,7 @@ itemType = {
 //        console.log(error)
 //    })
 //}
-function getIcon(itemHash, type){
+function getIcon(itemHash, type, itemInstanceId){
     axios({
         method: 'GET',
         url:"https://www.bungie.net/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + itemHash,
@@ -59,6 +59,7 @@ function getIcon(itemHash, type){
         var item = {
             icon : JSON.stringify(response.data.Response.displayProperties.icon),
             type : type,
+            instanceId: itemInstanceId.replace(/['"]+/g, ''),
             stats: response.data.Response.stats.stats
         }
         ipcRenderer.send('send-icon-image-main',item);
@@ -73,8 +74,6 @@ function getStatDetails(statHash, statValues){
             'Content-Type': 'application/json'
         }
     }).then(function(response){
-        getItemPower(globalChar.membershipType, globalChar.membershipId, globalChar.itemInstanceId)
-        console.log("power level " + itemLevels.powerLevel)
         $("#"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')).append("<p>"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')+ " " +statValues.value + "</p>")
     })
 }
@@ -87,14 +86,16 @@ function getItemPower(membershipType, membershipId, itemInstanceId){
             'Content-Type': 'application/json'
         }
     }).then(function(response){
-        itemLevels.powerLevel = JSON.stringify(response.Response.instance.data.primaryStat.value)
-        itemLevels.requiredLevel = JSON.stringify(response.Response.instance.data.equipRequiredLevel)
+
+        itemLevels.powerLevel = JSON.stringify(response.data.Response.instance.data.primaryStat.value)
+        itemLevels.requiredLevel = JSON.stringify(response.data.Response.instance.data.equipRequiredLevel)
+        alert(itemLevels.powerLevel);
         
     })
 }
 ipcRenderer.on('send-icon-image', function(event, item){
+    
     $("#"+item.type).attr("src", "https://www.bungie.net" + item.icon.replace(/['"]+/g, ''))
-    console.log('global test '+ JSON.stringify(globalChar));
     //pop up logic
     $(function() {
         var moveLeft = 20;
@@ -106,6 +107,8 @@ ipcRenderer.on('send-icon-image', function(event, item){
             .appendTo('body');
             //clears old pop up stats
             $('.stat').text("")
+            getItemPower(globalChar.membershipType, globalChar.membershipId, item.instanceId)
+
             for(var statHash in item.stats){
                 var statValues = {
                     value: JSON.stringify(item.stats[statHash].value),
@@ -134,8 +137,8 @@ ipcRenderer.on('character-details', function (event, characterInfo){
     })
     .then(function(response){
         for(var type in itemType){
-            console.log(itemType[type])
-            getIcon(response.data.Response.characterEquipment.data[characterInfo.characterId].items[itemType[type]].itemHash, type);
+            getIcon(response.data.Response.characterEquipment.data[characterInfo.characterId].items[itemType[type]].itemHash, type,
+                    response.data.Response.characterEquipment.data[characterInfo.characterId].items[itemType[type]].itemInstanceId);
         }
     })
     .catch(function (error){

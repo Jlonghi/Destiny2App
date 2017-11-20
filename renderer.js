@@ -74,7 +74,10 @@ function getStatDetails(statHash, statValues){
             'Content-Type': 'application/json'
         }
     }).then(function(response){
-        $("#"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')).append("<p>"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')+ " " +statValues.value + "</p>")
+        if(JSON.stringify(response.data.Response.displayProperties.name) != undefined){
+            var property = JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')
+            $("#"+property.replace(/ /g,'')).append("<p>"+JSON.stringify(response.data.Response.displayProperties.name).replace(/['"]+/g, '')+ " " +statValues.value + "</p>")
+        }
     })
 }
 function getItemPower(membershipType, membershipId, itemInstanceId){
@@ -86,10 +89,12 @@ function getItemPower(membershipType, membershipId, itemInstanceId){
             'Content-Type': 'application/json'
         }
     }).then(function(response){
-
-        itemLevels.powerLevel = JSON.stringify(response.data.Response.instance.data.primaryStat.value)
-        itemLevels.requiredLevel = JSON.stringify(response.data.Response.instance.data.equipRequiredLevel)
-        alert(itemLevels.powerLevel);
+        if(JSON.stringify(response.data.Response.instance.data.primaryStat) != undefined){
+            itemLevels.powerLevel = JSON.stringify(response.data.Response.instance.data.primaryStat.value)
+            itemLevels.requiredLevel = JSON.stringify(response.data.Response.instance.data.equipRequiredLevel)
+            $("#LightLevel").append("<p> Light: "+ itemLevels.powerLevel +"</p>")
+            $("#Required").append("<p> Required Level "+ itemLevels.requiredLevel +"</p>")
+        }
         
     })
 }

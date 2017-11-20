@@ -99,7 +99,6 @@ ipcMain.on('destiny2-oauth', (event, arg) => {
     });
 })
 ipcMain.on('character-details-main', function (event, characterInfo){
-    console.log(JSON.stringify(characterInfo))
     event.sender.send('character-details', characterInfo);
 });
 ipcMain.on('send-profile-main', function(event, response){

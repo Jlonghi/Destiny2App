@@ -1,3 +1,4 @@
+//Rewriting for main to hold functionality
 const {ipcMain} = require('electron')
 const electron = require('electron')
 const electronOauth2 = require('electron-oauth2');
